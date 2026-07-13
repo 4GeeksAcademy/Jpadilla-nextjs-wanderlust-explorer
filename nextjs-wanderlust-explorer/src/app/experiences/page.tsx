@@ -1,63 +1,55 @@
-'use client';
-import { Suspense, useState } from 'react';
-import { useFilters } from '@/hooks/useFilters';
+"use client";
+
 import ExperienceCard from '@/components/ExperienceCard';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-function ExploradorContent() {
-  const { filteredData } = useFilters();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
-
-  const toggleFavorite = (experienceId: string) => {
-    setFavorites((currentFavorites) => {
-      const nextFavorites = new Set(currentFavorites);
-
-      if (nextFavorites.has(experienceId)) {
-        nextFavorites.delete(experienceId);
-      } else {
-        nextFavorites.add(experienceId);
-      }
-
-      return nextFavorites;
-    });
-  };
-
-  return (
-    <div className="p-8">
-      {/* Búsqueda y Filtros */}
-      <input 
-        className="border p-2 w-full mb-4"
-        placeholder="Buscar..."
-        defaultValue={searchParams.get('search') || ''}
-        onChange={(e) => router.push(`/experiences?search=${e.target.value}`)}
-      />
-      
-      {/* Mensaje de no resultados */}
-      {filteredData.length === 0 && (
-        <p className="text-center mt-10 text-gray-500">No se encontraron resultados</p>
-      )}
-      
-      {/* Cuadrícula de tarjetas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredData.map(exp => (
-          <ExperienceCard
-            key={exp.id}
-            exp={exp}
-            isFavorite={favorites.has(exp.id)}
-            onToggle={() => toggleFavorite(exp.id)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+import FilterBar from '@/components/FilterBar';
+import SearchBar from '@/components/SearchBar';
+import { useFilters } from '@/hooks/useFilters';
 
 export default function Explorador() {
+  const {
+    term,
+    category,
+    destination,
+    categories,
+    destinations,
+    filteredData,
+    setTerm,
+    setCategory,
+    setDestination,
+  } = useFilters();
+
   return (
-    <Suspense fallback={<div className="p-8">Cargando experiencias...</div>}>
-      <ExploradorContent />
-    </Suspense>
+    <section className="px-4 py-8 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <header>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900">Explorador de experiencias</h1>
+          <p className="text-slate-600 mt-2">Filtra por titulo, categoria y destino.</p>
+        </header>
+
+        <div className="grid gap-3">
+          <SearchBar value={term} onChange={setTerm} />
+          <FilterBar
+            category={category}
+            destination={destination}
+            categories={categories}
+            destinations={destinations}
+            onCategoryChange={setCategory}
+            onDestinationChange={setDestination}
+          />
+        </div>
+
+        {filteredData.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-slate-300 p-8 text-center text-slate-600">
+            No se encontraron resultados
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.map((exp) => (
+              <ExperienceCard key={exp.id} exp={exp} />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

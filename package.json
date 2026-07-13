@@ -1,0 +1,10 @@
+{
+  "name": "jpadilla-nextjs-wanderlust-explorer-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix nextjs-wanderlust-explorer run dev",
+    "build": "npm --prefix nextjs-wanderlust-explorer run build",
+    "start": "npm --prefix nextjs-wanderlust-explorer run start",
+    "lint": "npm --prefix nextjs-wanderlust-explorer run lint"
+  }
+}
