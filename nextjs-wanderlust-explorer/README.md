@@ -34,3 +34,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# Wanderlust Explorer
+
+## Design References
+1. [Airbnb](https://www.airbnb.com) - UI de tarjetas y buscador intuitivo.
+2. [TripAdvisor](https://www.tripadvisor.com) - Sistema de filtros por categoría y destino.

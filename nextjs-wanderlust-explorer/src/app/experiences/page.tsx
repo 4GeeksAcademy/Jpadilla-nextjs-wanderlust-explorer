@@ -1,29 +1,63 @@
-// src/app/experiences/page.tsx
 'use client';
-import { useFilteredExperiences } from '@/hooks/useFilteredExperiences';
+import { Suspense, useState } from 'react';
+import { useFilters } from '@/hooks/useFilters';
 import ExperienceCard from '@/components/ExperienceCard';
-import type { Experience } from '@/Types/experience';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function Explorador() {
-  const filtered = useFilteredExperiences();
-  
+function ExploradorContent() {
+  const { filteredData } = useFilters();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  const toggleFavorite = (experienceId: string) => {
+    setFavorites((currentFavorites) => {
+      const nextFavorites = new Set(currentFavorites);
+
+      if (nextFavorites.has(experienceId)) {
+        nextFavorites.delete(experienceId);
+      } else {
+        nextFavorites.add(experienceId);
+      }
+
+      return nextFavorites;
+    });
+  };
+
   return (
     <div className="p-8">
-      {/* Aquí irían tus filtros (SearchBar, FilterBar) que actualizan el router.push */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {filtered.length > 0 ? (
-          filtered.map((exp: Experience) => (
-            <ExperienceCard
-              key={exp.id}
-              exp={exp}
-              isFavorite={false}
-              onToggle={() => {}}
-            />
-          ))
-        ) : (
-          <p>No se encontraron resultados</p>
-        )}
+      {/* Búsqueda y Filtros */}
+      <input 
+        className="border p-2 w-full mb-4"
+        placeholder="Buscar..."
+        defaultValue={searchParams.get('search') || ''}
+        onChange={(e) => router.push(`/experiences?search=${e.target.value}`)}
+      />
+      
+      {/* Mensaje de no resultados */}
+      {filteredData.length === 0 && (
+        <p className="text-center mt-10 text-gray-500">No se encontraron resultados</p>
+      )}
+      
+      {/* Cuadrícula de tarjetas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {filteredData.map(exp => (
+          <ExperienceCard
+            key={exp.id}
+            exp={exp}
+            isFavorite={favorites.has(exp.id)}
+            onToggle={() => toggleFavorite(exp.id)}
+          />
+        ))}
       </div>
     </div>
+  );
+}
+
+export default function Explorador() {
+  return (
+    <Suspense fallback={<div className="p-8">Cargando experiencias...</div>}>
+      <ExploradorContent />
+    </Suspense>
   );
 }
